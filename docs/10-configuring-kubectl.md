@@ -2,7 +2,27 @@
 
 In this lab you will generate a kubeconfig file for the `kubectl` command line utility based on the `admin` user credentials.
 
-> Run the commands in this lab from the same directory used to generate the admin client certificates.
+
+## Base definitions
+
+### High availability
+
+Generally, the term availability is used to describe the period of time when a service is available by a system to respond to a request made by a user. 
+
+#### Measuring Availability
+
+Availability is often expressed as a percentage indicating how much **uptime** is expected from a particular system or component in a given period of time, where a value of 100% would indicate that the system never fails. For instance, a system that guarantees 99% of availability in a period of one year can have up to 3.65 days of downtime (as 1% of 365 = 3.65)
+
+> High availabity generally comes at the cost of high performance which is how fast the server can process and respond to requests issued by the client. This needs a powerful machine but often due to good computational power availability takes a hit. In order to get around this we use `reundancy` meaning, multiple API servers which can all respond to the requests of the client however the administering of requests to the API server will be done by what's called a **Load Balancer**
+> 
+
+### Load balancer
+
+A type of reverse proxy that distributes traffic across servers. Load balancers can be found in many parts of a system, from the DNS layer all the way to the database layer.
+
+![Image of load balancer at work](https://assets.digitalocean.com/articles/high-availability/Diagram_2.png)
+
+Run the commands in this lab from the same directory used to generate the admin client certificates.
 
 ## The Admin Kubernetes Configuration File
 
