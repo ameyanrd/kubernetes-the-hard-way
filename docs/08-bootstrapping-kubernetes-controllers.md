@@ -4,7 +4,7 @@ In this lab you will bootstrap the Kubernetes control plane across three compute
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
+The commands in this lab must be run on each controller instance: `controller-0` and `controller-1`. Login to each controller instance using the `gcloud` command. Example:
 
 ```
 gcloud compute ssh controller-0
@@ -23,6 +23,10 @@ sudo mkdir -p /etc/kubernetes/config
 ```
 
 ### Download and Install the Kubernetes Controller Binaries
+ - [kube-apiserver](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/)
+ - [kube-controller-manager](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/)
+ - [kube-scheduler](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/)
+ - [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
 
 Download the official Kubernetes release binaries:
 
@@ -277,9 +281,11 @@ X-Content-Type-Options: nosniff
 ok
 ```
 
-> Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
+> Remember to run the above commands on each controller node: `controller-0` and `controller-1`.
 
 ## RBAC for Kubelet Authorization
+
+Role-Based Access Control (RBAC) restricts network access based on a user's role within an organization. The roles in RBAC refer to the levels of access that users have to the network. Users are only allowed to access the information necessary to effectively perform their jobs. Here we provide role-based accesses to Kubernetes API Servers, and across clusters. Read more about [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
 In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
 
