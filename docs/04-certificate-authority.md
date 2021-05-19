@@ -536,3 +536,26 @@ done
 > The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
 
 Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)
+
+
+
+## Resources used to learn PKI and TLS:
+
+### PKI:
+This is a technology which is used to create, manage and revoke digital certificates and also to manage public key encryption.
+https://www.youtube.com/watch?v=i-rtxrEz_E8
+
+### TLS
+
+https://www.youtube.com/watch?v=0TLDTodL7Lc
+
+
+### TLS handshake:
+This is used to transfer the data between the devices securely using cryptography. 
+There will be a series of steps which happens between the participating devices in order to establish a secure and encrypted connection between them. 
+Once all these steps are finished, the devices communicate by using a single key to encrypt and decrypt the data.
+It is explained more clearly in the following resources.
+https://www.youtube.com/watch?v=cuR05y_2Gxc
+https://www.youtube.com/watch?v=86cQJ0MMses
+
+https://docs.microsoft.com/en-us/windows/win32/secauthn/tls-handshake-protocol

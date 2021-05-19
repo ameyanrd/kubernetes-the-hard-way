@@ -4,7 +4,7 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each worker instance: `worker-0` and `worker-1`. Login to each worker instance using the `gcloud` command. Example:
 
 ```
 gcloud compute ssh worker-0
@@ -17,7 +17,9 @@ gcloud compute ssh worker-0
 ## Provisioning a Kubernetes Worker Node
 
 Install the OS dependencies:
-
+[socat](https://www.redhat.com/sysadmin/getting-started-socat)
+[conntrack](https://blog.cloudflare.com/conntrack-tales-one-thousand-and-one-flows/)
+[ipset](https://ipset.netfilter.org/ipset.man.html)
 ```
 {
   sudo apt-get update
@@ -25,7 +27,7 @@ Install the OS dependencies:
 }
 ```
 
-> The socat binary enables support for the `kubectl port-forward` command.
+> The socat binary enables support for the `kubectl port-forward` command (Visit [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to know more about port forwarding).
 
 ### Disable Swap
 
@@ -46,6 +48,10 @@ sudo swapoff -a
 > To ensure swap remains off after reboot consult your Linux distro documentation.
 
 ### Download and Install Worker Binaries
+
+[Worker Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/)
+[Kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
+[Kubeproxy](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)
 
 ```
 wget -q --show-progress --https-only --timestamping \
@@ -131,6 +137,7 @@ EOF
 ### Configure containerd
 
 Create the `containerd` configuration file:
+[containerd](https://containerd.io/)
 
 ```
 sudo mkdir -p /etc/containerd/
@@ -288,7 +295,7 @@ EOF
 }
 ```
 
-> Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
+> Remember to run the above commands on each worker node: `worker-0` and `worker-1`.
 
 ## Verification
 
@@ -307,7 +314,11 @@ gcloud compute ssh controller-0 \
 NAME       STATUS   ROLES    AGE   VERSION
 worker-0   Ready    <none>   24s   v1.18.6
 worker-1   Ready    <none>   24s   v1.18.6
-worker-2   Ready    <none>   24s   v1.18.6
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
+
+## Additional resources:
+* [Kubernetes Networking](https://sookocheff.com/post/kubernetes/understanding-kubernetes-networking-model/)
+* [CNI](https://www.youtube.com/watch?v=l2BS_kuQxBA)
+* [Network Namespace](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
