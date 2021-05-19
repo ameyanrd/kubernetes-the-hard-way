@@ -2,6 +2,12 @@
 
 Kubernetes components are stateless and store cluster state in [etcd](https://github.com/etcd-io/etcd). In this lab you will bootstrap a three node etcd cluster and configure it for high availability and secure remote access.
 
+### Recommended resources to get familiar with ETCD
+#### [What is ETCD ?](https://www.youtube.com/watch?v=OmphHSaO1sE)
+
+#### [A guide to kubernetes etcd](https://superuser.openstack.org/articles/a-guide-to-kubernetes-etcd-all-you-need-to-know-to-set-up-etcd-clusters/)
+
+
 ## Prerequisites
 
 The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
