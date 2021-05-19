@@ -14,6 +14,8 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
 
+A VPC is basically a subset of a Public Cloud Service with all of its resources isolated from the rest of the public cloud. It is a virtual version of a physical network. Since it's isolated, it is secure, and it can share resources with the rest of the cloud network. Organisations using a VPC need not pay for software, hardware, or maintenance. Since a public cloud service is being used, you only pay for the resources you use and hence, it is cost-effective. More details can be found [here](https://www.checkpoint.com/cyber-hub/cloud-security/what-is-vpc-virtual-private-cloud/).
+
 Create the `kubernetes-the-hard-way` custom VPC network:
 
 ```
@@ -31,8 +33,40 @@ gcloud compute networks subnets create kubernetes \
 ```
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
+ 
+To understand what subnets are, it is important to understand the structure of an IP address. Since we're dealing with IPv4 addresses, we'll only be discussing that in detail here.
+
+An IP address is a unique identifier used to identify devices over a network. An IP address can be public or private. A public IP address is that which is visible over the internet and is used to uniquely identify devices over the internet. A private IP address, on the other hand, uniquely identifies devices in a network and is usually assigned by a local network administrator or a router. The scope of a private IP is local to the network that the device is a part of.
+
+An IPv4 address is a 4-byte long address separated by dots. Each byte is represented in the decimal format and can have any value between 0 and 255. They allow for 2<sup>32</sup> unique addresses. An example of an IPv4 address is `10.240.1.1`. The term IP used hereafter would refer to IPv4 addresses unless specified otherwise. To allow for easier searching of IP addresses from such a huge set of addresses over the internet, we have two further sub-classes within the IP address - the network address and the host address. This is analogous to postal codes in India - where the first digit stands for the postal region/state, and the next few digits are allotted to districts within the larger states. The network part is used to identify the network, amd the host part is used to pin-point the device within that network. 
+
+Let's consider an example - `10.240.1.1`. Here `10.x.x.x` identifies the network, while `x.240.1.1` identifies the host device.
+
+Based on these sub classes, IP addresses divided into five classes -
+
+- **Class A** - `0.0.0.0	to 127.0.0.0` - Only the first 8 bits identify the network. It can therefore have 128 networks and (2<sup>24</sup>-2) devices per network. Used by networks with a large number devices. `127.x.x.x` is a special address called the loop-back address.
+ 
+- **Class B** - `128.0.0.0 to 191.255.0.0` - First 16 bits identify the network. Used for the networks with a medium number of hosts.
+ 
+- **Class C** - `192.0.0.0 to 223.255.255.0` - First 24 bits used to identify the network, usually used by local networks, like in a computer lab or your home for instance.
+ 
+- **Class D** - `224.0.0.0 to 239.255.255.255` - All 4 octets identify a network uniquely. All devices connected to a network use the same address, and is used for multicasting.
+
+- **Class E** - `240.0.0.0 to 255.255.255.255` - This address class is reserved for experiments and research.
+
+The first address of a particular class is reserved for the network, and the last one reserved for broadcasting.
+
+Coming back to subnets, a subnet mask identifies the network part in a network. It can be represented in two formats -
+
+- **Dotted decimal format** - `255.255.255.0` is a subnet mask for an IP address belonging to Class C. Similarly, `255.255.0.0` is a subnet mask for that of Class B. A deeper understanding can be obtained by looking at how IP addresses work at the binary level. You can read more [here](https://www.garykessler.net/library/subnet_masks.html).
+
+- **Decimal format** - Represented by the number of digits that form the network part of a network. For example, `192.168.0.1/24`. Here, 24 is the subnet mask which means the first 24 bits (or the first 3 bytes) form the network part of the address and the last byte identifies the host. 
+
+Subnet masks also introduce the concept of [Classless Inter Domain Routing (CIDR)](https://whatismyipaddress.com/cidr). Classless inter-domain routing (CIDR) is a set of Internet protocol (IP) standards that is used to create unique identifiers for networks and individual devices. You can read more about IP addresses, subnets and CIDRs [here](https://www.digitalocean.com/community/tutorials/understanding-ip-addresses-subnets-and-cidr-notation-for-networking).
 
 ### Firewall Rules
+
+A firewall is a network security device that monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules.
 
 Create a firewall rule that allows internal communication across all protocols:
 
@@ -53,6 +87,8 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
 ```
 
 > An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
+
+An external load balancer distributes traffic coming in from the internet to the VPC. On the contrary, an internal load balancer is assigned to a private subnet and does not have a public IP address. It routes traffic to clients within the subnet.
 
 List the firewall rules in the `kubernetes-the-hard-way` VPC network:
 
@@ -96,6 +132,8 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 ### Kubernetes Controllers
 
+Kubernetes controllers are just watch-dogs that watch the state of your cluster, then make or request changes where needed. It tries to move the current cluster state closer to the desired state.
+
 Create three compute instances which will host the Kubernetes control plane:
 
 ```
@@ -116,7 +154,7 @@ done
 
 ### Kubernetes Workers
 
-Each worker instance requires a pod subnet allocation from the Kubernetes cluster CIDR range. The pod subnet allocation will be used to configure container networking in a later exercise. The `pod-cidr` instance metadata will be used to expose pod subnet allocations to compute instances at runtime.
+Kubernetes workers are nodes within the cluster. Each worker instance requires a pod subnet allocation from the Kubernetes cluster CIDR range. The pod subnet allocation will be used to configure container networking in a later exercise. The `pod-cidr` instance metadata will be used to expose pod subnet allocations to compute instances at runtime.
 
 > The Kubernetes cluster CIDR range is defined by the Controller Manager's `--cluster-cidr` flag. In this tutorial the cluster CIDR range will be set to `10.200.0.0/16`, which supports 254 subnets.
 
@@ -161,7 +199,7 @@ worker-2      us-west1-c  e2-standard-2               10.240.0.22  XX.XXX.XX.XX 
 
 ## Configuring SSH Access
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one computer to another. SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
 
 Test SSH access to the `controller-0` compute instances:
 
